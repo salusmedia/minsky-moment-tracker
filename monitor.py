@@ -482,7 +482,8 @@ def render_html(cfg: dict, res: dict) -> str:
             stale = ' <span class="tag">数据陈旧</span>' if r.get("stale") else ""
             rows.append(
                 f'<tr><td><span class="badge" style="background:{color}">{STATUS_NAME[r["status"]]}</span></td>'
-                f'<td><b>{html.escape(r["name"])}</b>{stale}{note}</td>'
+                f'<td><b>{html.escape(r["name"])}</b>{stale}{note}'
+                f'<div class="alarm-action" onclick="openProModal()">🔔 订阅该指标异动提醒 (Pro)</div></td>'
                 f'<td class="num">{fmt(r["value"], r["unit"] or "") if r["value"] is not None else "-"}'
                 f'<div class="muted">{r["date"] or ""}</div></td>'
                 f'<td>{sparkline(r["series"], color)}</td><td class="rules">{rules}</td></tr>')
@@ -499,16 +500,30 @@ def render_html(cfg: dict, res: dict) -> str:
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="明斯基预警">
 <link rel="manifest" href="manifest.json">
-<title>明斯基时刻预警看板</title>
+<title>Global Radar 全球宏观与指标雷达</title>
 <style>
 :root {{ color-scheme: light dark; }}
-body {{ font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; margin: 0; padding: 24px;
+body {{ font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; margin: 0; padding: 24px 16px 60px;
        background: #f6f8fa; color: #24292f; }}
 @media (prefers-color-scheme: dark) {{ body {{ background:#0d1117; color:#e6edf3; }}
-  .card, table {{ background:#161b22 !important; }} th {{ background:#21262d !important; }}
-  td, th {{ border-color:#30363d !important; }} polyline[stroke="#24292f"] {{ stroke:#e6edf3; }} }}
+  .card, table, .modal-box {{ background:#161b22 !important; }} th {{ background:#21262d !important; }}
+  td, th {{ border-color:#30363d !important; }} polyline[stroke="#24292f"] {{ stroke:#e6edf3; }}
+  .nav-item {{ color: #8c959f !important; }} .nav-item.active {{ color: #e6edf3 !important; border-color: #f78166 !important; }}
+}}
 .wrap {{ max-width: 1180px; margin: 0 auto; }}
-h1 {{ margin: 0 0 4px; font-size: 24px; }} h2 {{ margin: 28px 0 10px; font-size: 18px; }}
+.header-row {{ display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }}
+h1 {{ margin: 0; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 8px; }}
+.brand-tag {{ font-size: 11px; background: #0969da; color: #fff; padding: 2px 7px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }}
+.pro-btn {{ background: linear-gradient(135deg, #ff5e62, #ff9966); color: #fff; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(255,94,98,0.3); transition: transform 0.1s; }}
+.pro-btn:hover {{ transform: translateY(-1px); }}
+
+/* SaaS 分类导航栏 */
+.nav-bar {{ display: flex; gap: 8px; border-bottom: 1px solid #d0d7de; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }}
+.nav-item {{ text-decoration: none; padding: 8px 14px; font-size: 14px; font-weight: 600; color: #57606a; border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 6px; }}
+.nav-item.active {{ color: #0969da; border-color: #0969da; }}
+.nav-badge {{ font-size: 10px; background: #afb8c133; color: #57606a; padding: 1px 6px; border-radius: 10px; font-weight: 500; }}
+.nav-badge.hot {{ background: #dafbe1; color: #1a7f37; }}
+
 .muted {{ color: #8c959f; font-size: 12px; }}
 .top {{ display: grid; grid-template-columns: 260px 1fr; gap: 16px; margin-top: 16px; }}
 .card {{ background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }}
@@ -525,10 +540,40 @@ th {{ background: #f6f8fa; font-weight: 600; }}
 .note {{ color: #8c959f; font-size: 12px; margin-top: 3px; max-width: 320px; }}
 .tag {{ background:#ffebe9; color:#cf222e; font-size:11px; padding:1px 6px; border-radius:6px; }}
 .err {{ background:#ffebe9; color:#82071e; padding:12px; border-radius:8px; margin-top:16px; font-size:13px; }}
-@media (max-width: 760px) {{ .top {{ grid-template-columns: 1fr; }} td:nth-child(4), th:nth-child(4) {{ display:none; }} }}
+.alarm-action {{ font-size: 11px; color: #0969da; cursor: pointer; text-decoration: underline; margin-top: 2px; }}
+
+/* 模态弹窗 */
+.modal-overlay {{ display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); z-index: 999; align-items: center; justify-content: center; padding: 16px; }}
+.modal-overlay.active {{ display: flex; }}
+.modal-box {{ background: #fff; width: 100%; max-width: 480px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); position: relative; }}
+.close-btn {{ position: absolute; top: 16px; right: 16px; font-size: 22px; cursor: pointer; border: none; background: none; color: #8c959f; }}
+.plan-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }}
+.plan-card {{ border: 1.5px solid #d0d7de; border-radius: 12px; padding: 14px; text-align: center; }}
+.plan-card.featured {{ border-color: #ff5e62; background: rgba(255,94,98,0.04); }}
+.plan-price {{ font-size: 22px; font-weight: 700; margin: 6px 0; color: #ff5e62; }}
+.plan-features {{ list-style: none; padding: 0; margin: 12px 0 0; font-size: 12px; text-align: left; line-height: 1.8; color: #57606a; }}
+.buy-btn {{ display: block; width: 100%; text-align: center; background: linear-gradient(135deg, #ff5e62, #ff9966); color: #fff; padding: 12px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 14px; margin-top: 14px; box-sizing: border-box; }}
+
+@media (max-width: 760px) {{ .top {{ grid-template-columns: 1fr; }} td:nth-child(4), th:nth-child(4) {{ display:none; }} .plan-grid {{ grid-template-columns: 1fr; }} }}
 </style></head><body><div class="wrap">
-<h1>明斯基时刻预警看板</h1>
-<div class="muted">更新时间 {res['time']} · 数据源 FRED / Yahoo Finance · 仅供参考，不构成投资建议</div>
+
+<div class="header-row">
+  <div>
+    <h1>全球指标监控雷达 <span class="brand-tag">Global Radar</span></h1>
+    <div class="muted" style="margin-top: 4px;">多源宏观金融、产业供应链异动感知系统 · 仅供参考，不构成投资建议</div>
+  </div>
+  <button class="pro-btn" onclick="openProModal()">💎 升级 Pro 极速预警</button>
+</div>
+
+<!-- 分类导航 -->
+<div class="nav-bar">
+  <div class="nav-item active">🚨 宏观危机与明斯基时刻 <span class="nav-badge hot">实时</span></div>
+  <div class="nav-item" onclick="alert('【AI 算力与基础设施雷达】正在灰度测试中，即将向 Pro 用户开放！')">⚡ AI 算力与数据中心 <span class="nav-badge">预约中</span></div>
+  <div class="nav-item" onclick="alert('【跨境出海与航运运价雷达】正在接入 BDI/SCFI 及主要汇率异动，即将上线！')">🚢 跨境出海与海运汇率 <span class="nav-badge">预约中</span></div>
+  <div class="nav-item" onclick="alert('【新能源与金属大宗商品】即将上线！')">🔋 关键金属与能源负荷 <span class="nav-badge">筹备中</span></div>
+</div>
+
+<div class="muted">数据更新时间：{res['time']} · 数据源：FRED / Yahoo Finance 自动对齐</div>
 <div class="top">
   <div class="card"><div class="muted">综合风险分（0–100）</div>
     <div class="score" style="color:{lv_color}">{res['score']:.0f}</div>
@@ -540,6 +585,54 @@ th {{ background: #f6f8fa; font-weight: 600; }}
 {errs}
 {''.join(sections)}
 <h2>需要人工跟踪的信号</h2><div class="card"><ul>{manual}</ul></div>
+
+<!-- Pro 付费订阅弹窗 -->
+<div class="modal-overlay" id="proModal">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeProModal()">&times;</button>
+    <h3 style="margin: 0 0 6px; font-size: 18px;">💎 升级 Global Radar Pro</h3>
+    <div class="muted">告别被动查看，当全球关键指标异动破位时，第一时间触达你的手机。</div>
+
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div style="font-weight: 600; font-size: 14px;">月度订阅</div>
+        <div class="plan-price">¥19 <span style="font-size: 12px; font-weight: normal; color: #8c959f;">/ 月</span></div>
+        <ul class="plan-features">
+          <li>✓ 微信/短信异动实时通知</li>
+          <li>✓ 22 项全指标异动极速叫醒</li>
+          <li>✓ 全新算力与海运雷达提前内测</li>
+        </ul>
+      </div>
+      <div class="plan-card featured">
+        <div style="font-weight: 600; font-size: 14px; color: #ff5e62;">年度尊享 (立省40%)</div>
+        <div class="plan-price">¥139 <span style="font-size: 12px; font-weight: normal; color: #8c959f;">/ 年</span></div>
+        <ul class="plan-features">
+          <li>✓ 包含月度版所有特权</li>
+          <li>✓ 危机深度对冲内参周报</li>
+          <li>✓ 宏观与出海专属交流社群</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 爱发电 / 面包多 收款跳转按钮 -->
+    <a href="https://afdian.com" target="_blank" class="buy-btn" id="payLink">前往爱发电 / 面包多安全订阅</a>
+    <div class="muted" style="text-align: center; margin-top: 10px; font-size: 11px;">
+      * 支持微信支付、支付宝付款 · 付款后自动获取专属预警 Webhook/授权码
+    </div>
+  </div>
+</div>
+
+<script>
+function openProModal() {{
+  document.getElementById('proModal').classList.add('active');
+}}
+function closeProModal() {{
+  document.getElementById('proModal').classList.remove('active');
+}}
+document.getElementById('proModal').addEventListener('click', function(e) {{
+  if (e.target === this) closeProModal();
+}});
+</script>
 </div></body></html>"""
 
 
