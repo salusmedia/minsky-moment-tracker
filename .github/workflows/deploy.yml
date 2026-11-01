@@ -1,0 +1,65 @@
+name: Update Minsky Dashboard
+
+on:
+  schedule:
+    # 每天北京时间 08:30 和 20:30 自动抓取更新 (UTC 00:30, 12:30)
+    - cron: '30 0,12 * * *'
+  workflow_dispatch: # 支持在 GitHub 页面手动点击一键运行
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Minsky Monitor
+        env:
+          BARK_KEY: ${{ secrets.BARK_KEY }}
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: |
+          python3 monitor.py
+
+      - name: Commit & Push Updated History and State
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update monitor state & history [skip ci]" && git push)
+
+      - name: Prepare Pages Artifacts
+        run: |
+          mkdir -p dist
+          cp reports/latest.html dist/index.html
+          cp reports/latest.json dist/latest.json
+          # 如果有图标或 manifest 也可以一并复制
+          if [ -f manifest.json ]; then cp manifest.json dist/; fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

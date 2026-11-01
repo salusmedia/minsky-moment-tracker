@@ -1,0 +1,457 @@
+{
+  "time": "2026-11-02T05:03:38",
+  "score": 21.8,
+  "level": {
+    "min": 20,
+    "name": "关注",
+    "emoji": "🟡"
+  },
+  "level_idx": 1,
+  "category_scores": {
+    "信用市场": 14.3,
+    "私人信贷": 37.5,
+    "AI 基础设施": 42.9,
+    "利率与主权债": 21.4,
+    "资金市场": 0.0,
+    "综合压力": 0.0
+  },
+  "errors": [],
+  "indicators": [
+    {
+      "key": "hy_oas",
+      "name": "美国高收益债利差 (HY OAS)",
+      "category": "信用市场",
+      "unit": "%",
+      "weight": 3,
+      "note": "信用风险总温度计。2008 年峰值约 19%，2020 年 3 月约 10.9%。",
+      "value": 3.26,
+      "date": "2026-10-29",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 3.26%（关注≥4.5 / 警报≥6.0）"
+        },
+        {
+          "status": 0,
+          "text": "近 20 期变化 +0.02pp（上升关注≥0.75 / 警报≥1.5）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "ccc_oas",
+      "name": "CCC 级垃圾债利差",
+      "category": "信用市场",
+      "unit": "%",
+      "weight": 2,
+      "note": "最脆弱、最依赖再融资的借款人（庞氏融资者）的处境。",
+      "value": 13.25,
+      "date": "2026-10-29",
+      "rules": [
+        {
+          "status": 1,
+          "text": "水平 13.25%（关注≥11 / 警报≥15）"
+        },
+        {
+          "status": 0,
+          "text": "近 20 期变化 +1.10pp（上升关注≥1.5 / 警报≥3.0）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "bbb_oas",
+      "name": "BBB 级投资级债利差",
+      "category": "信用市场",
+      "unit": "%",
+      "weight": 2,
+      "note": "大量科技/数据中心债集中在 BBB 档，走阔意味着压力扩散到投资级。",
+      "value": 1.1,
+      "date": "2026-10-29",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 1.10%（关注≥1.6 / 警报≥2.3）"
+        },
+        {
+          "status": 0,
+          "text": "近 20 期变化 +0.04pp（上升关注≥0.35 / 警报≥0.7）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "bizd",
+      "name": "BDC 指数 ETF (BIZD)",
+      "category": "私人信贷",
+      "unit": "$",
+      "weight": 3,
+      "note": "零售可买的私人信贷载体，赎回/折价压力最先体现在这里。",
+      "value": 12.390000343322754,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 1,
+          "text": "较 252 日高点回撤 17.7%（关注≥12% / 警报≥22%）"
+        },
+        {
+          "status": 0,
+          "text": "近 5 期变化 +3.9%（下跌关注≥5% / 警报≥10%）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "arcc",
+      "name": "最大 BDC：Ares Capital (ARCC)",
+      "category": "私人信贷",
+      "unit": "$",
+      "weight": 1,
+      "note": null,
+      "value": 19.110000610351562,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 0,
+          "text": "较 252 日高点回撤 9.1%（关注≥12% / 警报≥22%）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "owl",
+      "name": "Blue Owl (OWL)",
+      "category": "私人信贷",
+      "unit": "$",
+      "weight": 1,
+      "note": "数据中心融资最激进的私人信贷管理人之一。",
+      "value": 10.329999923706055,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 1,
+          "text": "较 252 日高点回撤 38.0%（关注≥30% / 警报≥50%）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "apo",
+      "name": "Apollo (APO)",
+      "category": "私人信贷",
+      "unit": "$",
+      "weight": 1,
+      "note": null,
+      "value": 115.83999633789062,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 0,
+          "text": "较 252 日高点回撤 24.1%（关注≥25% / 警报≥40%）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "bx",
+      "name": "Blackstone (BX)",
+      "category": "私人信贷",
+      "unit": "$",
+      "weight": 1,
+      "note": null,
+      "value": 118.51000213623047,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 1,
+          "text": "较 252 日高点回撤 27.5%（关注≥25% / 警报≥40%）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "ares",
+      "name": "Ares Management (ARES)",
+      "category": "私人信贷",
+      "unit": "$",
+      "weight": 1,
+      "note": null,
+      "value": 128.14999389648438,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 1,
+          "text": "较 252 日高点回撤 28.1%（关注≥25% / 警报≥40%）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "crwv",
+      "name": "CoreWeave (CRWV) 算力租赁",
+      "category": "AI 基础设施",
+      "unit": "$",
+      "weight": 2,
+      "note": "高杠杆、GPU 抵押融资的代表，是“雷曼候选”的风向标。",
+      "value": 54.869998931884766,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 2,
+          "text": "较 252 日高点回撤 60.2%（关注≥40% / 警报≥60%）"
+        },
+        {
+          "status": 0,
+          "text": "近 5 期变化 +1.2%（下跌关注≥15% / 警报≥25%）"
+        }
+      ],
+      "status": 2,
+      "stale": false
+    },
+    {
+      "key": "nvda",
+      "name": "英伟达 (NVDA)",
+      "category": "AI 基础设施",
+      "unit": "$",
+      "weight": 2,
+      "note": null,
+      "value": 204.63999938964844,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 0,
+          "text": "较 252 日高点回撤 14.5%（关注≥20% / 警报≥35%）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "smh",
+      "name": "半导体 ETF (SMH)",
+      "category": "AI 基础设施",
+      "unit": "$",
+      "weight": 2,
+      "note": null,
+      "value": 522.489990234375,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 1,
+          "text": "较 252 日高点回撤 21.9%（关注≥20% / 警报≥32%）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "dlr",
+      "name": "数据中心 REIT (DLR)",
+      "category": "AI 基础设施",
+      "unit": "$",
+      "weight": 1,
+      "note": null,
+      "value": 180.6999969482422,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 0,
+          "text": "较 252 日高点回撤 11.4%（关注≥18% / 警报≥30%）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "dgs10",
+      "name": "10 年期美债收益率",
+      "category": "利率与主权债",
+      "unit": "%",
+      "weight": 2,
+      "note": null,
+      "value": 4.98,
+      "date": "2026-10-29",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 4.98%（关注≥5.0 / 警报≥5.5）"
+        },
+        {
+          "status": 0,
+          "text": "近 20 期变化 -0.31pp（上升关注≥0.4 / 警报≥0.75）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "dgs30",
+      "name": "30 年期美债收益率",
+      "category": "利率与主权债",
+      "unit": "%",
+      "weight": 2,
+      "note": "财政可持续性担忧会首先体现在超长端。",
+      "value": 5.32,
+      "date": "2026-10-29",
+      "rules": [
+        {
+          "status": 1,
+          "text": "水平 5.32%（关注≥5.25 / 警报≥5.75）"
+        },
+        {
+          "status": 0,
+          "text": "近 20 期变化 -0.32pp（上升关注≥0.4 / 警报≥0.75）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "move",
+      "name": "MOVE 美债波动率指数",
+      "category": "利率与主权债",
+      "unit": "",
+      "weight": 2,
+      "note": "美债波动飙升会触发基差交易平仓与抵押品折价。2008 年峰值约 260，2023 年 3 月约 199。",
+      "value": 100.19999694824219,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 100.2（关注≥120 / 警报≥150）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "oil",
+      "name": "WTI 原油价格",
+      "category": "利率与主权债",
+      "unit": "$",
+      "weight": 1,
+      "note": "能源冲击 → 通胀再起 → 利率被迫走高。",
+      "value": 103.37,
+      "date": "2026-10-27",
+      "rules": [
+        {
+          "status": 1,
+          "text": "水平 $103.37（关注≥100 / 警报≥125）"
+        },
+        {
+          "status": 0,
+          "text": "近 20 期变化 +7.5%（上升关注≥20% / 警报≥40%）"
+        }
+      ],
+      "status": 1,
+      "stale": false
+    },
+    {
+      "key": "sofr_iorb",
+      "name": "SOFR − IORB 利差",
+      "category": "资金市场",
+      "unit": "bp",
+      "weight": 3,
+      "note": "回购利率高于准备金利率 = 美元流动性吃紧（2019 年 9 月回购危机的信号）。",
+      "value": 4.0,
+      "date": "2026-10-29",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 4.0bp（关注≥5 / 警报≥15）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "srf",
+      "name": "美联储隔夜回购操作用量",
+      "category": "资金市场",
+      "unit": "十亿$",
+      "weight": 2,
+      "note": "机构被迫向美联储常备回购便利借钱，说明市场融资渠道出了问题。",
+      "value": 0.0,
+      "date": "2026-10-30",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 0.00十亿$（关注≥10 / 警报≥50）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "vix",
+      "name": "VIX 股市恐慌指数",
+      "category": "综合压力",
+      "unit": "",
+      "weight": 1,
+      "note": null,
+      "value": 17.2,
+      "date": "2026-10-29",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 17.20（关注≥25 / 警报≥35）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "stlfsi",
+      "name": "圣路易斯联储金融压力指数",
+      "category": "综合压力",
+      "unit": "",
+      "weight": 2,
+      "note": "0 为长期平均水平，正值代表压力高于平均。周度数据。",
+      "value": -0.5837,
+      "date": "2026-10-23",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 -0.58（关注≥0.5 / 警报≥1.5）"
+        },
+        {
+          "status": 0,
+          "text": "近 4 期变化 +0.22（上升关注≥0.75 / 警报≥1.5）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    },
+    {
+      "key": "nfci",
+      "name": "芝加哥联储金融状况指数 (NFCI)",
+      "category": "综合压力",
+      "unit": "",
+      "weight": 2,
+      "note": "正值代表金融条件比历史平均更紧。周度数据。",
+      "value": -0.487,
+      "date": "2026-10-23",
+      "rules": [
+        {
+          "status": 0,
+          "text": "水平 -0.49（关注≥0.0 / 警报≥0.5）"
+        },
+        {
+          "status": 0,
+          "text": "近 4 期变化 +0.03（上升关注≥0.25 / 警报≥0.5）"
+        }
+      ],
+      "status": 0,
+      "stale": false
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "_说明": "明斯基时刻预警监控配置。阈值可按需调整。status: 0=正常 1=关注(warn) 2=警报(alert)。密钥可写成 ${环境变量名} 从环境变量读取。",
+
+  "composite_levels": [
+    {"min": 0,  "name": "正常", "emoji": "🟢"},
+    {"min": 20, "name": "关注", "emoji": "🟡"},
+    {"min": 40, "name": "警戒", "emoji": "🟠"},
+    {"min": 60, "name": "高危", "emoji": "🔴"}
+  ],
+
+  "notify": {
+    "on_escalation": true,
+    "on_recovery": true,
+    "daily_summary": false,
+    "notify_on_fetch_errors": true,
+    "channels": {
+      "macos":      {"enabled": true,  "sound": "Glass"},
+      "bark":       {"enabled": false, "server": "https://api.day.app", "device_key": "${BARK_KEY}"},
+      "serverchan": {"enabled": false, "sendkey": "${SERVERCHAN_KEY}"},
+      "telegram":   {"enabled": false, "bot_token": "${TG_BOT_TOKEN}", "chat_id": "${TG_CHAT_ID}"},
+      "email": {
+        "enabled": false,
+        "smtp_host": "smtp.qq.com", "smtp_port": 465,
+        "username": "${SMTP_USER}", "password": "${SMTP_PASS}",
+        "from": "${SMTP_USER}", "to": ["${SMTP_USER}"]
+      },
+      "webhook":    {"enabled": false, "url": "${WEBHOOK_URL}"}
+    }
+  },
+
+  "indicators": [
+    {
+      "key": "hy_oas", "name": "美国高收益债利差 (HY OAS)", "category": "信用市场", "unit": "%", "weight": 3,
+      "series": {"source": "fred", "id": "BAMLH0A0HYM2"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 4.5, "alert": 6.0},
+        {"type": "change", "window": 20, "mode": "abs", "direction": "up", "warn": 0.75, "alert": 1.5}
+      ],
+      "note": "信用风险总温度计。2008 年峰值约 19%，2020 年 3 月约 10.9%。"
+    },
+    {
+      "key": "ccc_oas", "name": "CCC 级垃圾债利差", "category": "信用市场", "unit": "%", "weight": 2,
+      "series": {"source": "fred", "id": "BAMLH0A3HYC"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 11, "alert": 15},
+        {"type": "change", "window": 20, "mode": "abs", "direction": "up", "warn": 1.5, "alert": 3.0}
+      ],
+      "note": "最脆弱、最依赖再融资的借款人（庞氏融资者）的处境。"
+    },
+    {
+      "key": "bbb_oas", "name": "BBB 级投资级债利差", "category": "信用市场", "unit": "%", "weight": 2,
+      "series": {"source": "fred", "id": "BAMLC0A4CBBB"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 1.6, "alert": 2.3},
+        {"type": "change", "window": 20, "mode": "abs", "direction": "up", "warn": 0.35, "alert": 0.7}
+      ],
+      "note": "大量科技/数据中心债集中在 BBB 档，走阔意味着压力扩散到投资级。"
+    },
+
+    {
+      "key": "bizd", "name": "BDC 指数 ETF (BIZD)", "category": "私人信贷", "unit": "$", "weight": 3,
+      "series": {"source": "yahoo", "id": "BIZD"},
+      "rules": [
+        {"type": "drawdown", "window": 252, "warn": 12, "alert": 22},
+        {"type": "change", "window": 5, "mode": "pct", "direction": "down", "warn": 5, "alert": 10}
+      ],
+      "note": "零售可买的私人信贷载体，赎回/折价压力最先体现在这里。"
+    },
+    {
+      "key": "arcc", "name": "最大 BDC：Ares Capital (ARCC)", "category": "私人信贷", "unit": "$", "weight": 1,
+      "series": {"source": "yahoo", "id": "ARCC"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 12, "alert": 22}]
+    },
+    {
+      "key": "owl", "name": "Blue Owl (OWL)", "category": "私人信贷", "unit": "$", "weight": 1,
+      "series": {"source": "yahoo", "id": "OWL"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 30, "alert": 50}],
+      "note": "数据中心融资最激进的私人信贷管理人之一。"
+    },
+    {
+      "key": "apo", "name": "Apollo (APO)", "category": "私人信贷", "unit": "$", "weight": 1,
+      "series": {"source": "yahoo", "id": "APO"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 25, "alert": 40}]
+    },
+    {
+      "key": "bx", "name": "Blackstone (BX)", "category": "私人信贷", "unit": "$", "weight": 1,
+      "series": {"source": "yahoo", "id": "BX"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 25, "alert": 40}]
+    },
+    {
+      "key": "ares", "name": "Ares Management (ARES)", "category": "私人信贷", "unit": "$", "weight": 1,
+      "series": {"source": "yahoo", "id": "ARES"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 25, "alert": 40}]
+    },
+
+    {
+      "key": "crwv", "name": "CoreWeave (CRWV) 算力租赁", "category": "AI 基础设施", "unit": "$", "weight": 2,
+      "series": {"source": "yahoo", "id": "CRWV"},
+      "rules": [
+        {"type": "drawdown", "window": 252, "warn": 40, "alert": 60},
+        {"type": "change", "window": 5, "mode": "pct", "direction": "down", "warn": 15, "alert": 25}
+      ],
+      "note": "高杠杆、GPU 抵押融资的代表，是“雷曼候选”的风向标。"
+    },
+    {
+      "key": "nvda", "name": "英伟达 (NVDA)", "category": "AI 基础设施", "unit": "$", "weight": 2,
+      "series": {"source": "yahoo", "id": "NVDA"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 20, "alert": 35}]
+    },
+    {
+      "key": "smh", "name": "半导体 ETF (SMH)", "category": "AI 基础设施", "unit": "$", "weight": 2,
+      "series": {"source": "yahoo", "id": "SMH"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 20, "alert": 32}]
+    },
+    {
+      "key": "dlr", "name": "数据中心 REIT (DLR)", "category": "AI 基础设施", "unit": "$", "weight": 1,
+      "series": {"source": "yahoo", "id": "DLR"},
+      "rules": [{"type": "drawdown", "window": 252, "warn": 18, "alert": 30}]
+    },
+
+    {
+      "key": "dgs10", "name": "10 年期美债收益率", "category": "利率与主权债", "unit": "%", "weight": 2,
+      "series": {"source": "fred", "id": "DGS10"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 5.0, "alert": 5.5},
+        {"type": "change", "window": 20, "mode": "abs", "direction": "up", "warn": 0.4, "alert": 0.75}
+      ]
+    },
+    {
+      "key": "dgs30", "name": "30 年期美债收益率", "category": "利率与主权债", "unit": "%", "weight": 2,
+      "series": {"source": "fred", "id": "DGS30"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 5.25, "alert": 5.75},
+        {"type": "change", "window": 20, "mode": "abs", "direction": "up", "warn": 0.4, "alert": 0.75}
+      ],
+      "note": "财政可持续性担忧会首先体现在超长端。"
+    },
+    {
+      "key": "move", "name": "MOVE 美债波动率指数", "category": "利率与主权债", "unit": "", "weight": 2,
+      "series": {"source": "yahoo", "id": "^MOVE"},
+      "rules": [{"type": "level", "direction": "above", "warn": 120, "alert": 150}],
+      "note": "美债波动飙升会触发基差交易平仓与抵押品折价。2008 年峰值约 260，2023 年 3 月约 199。"
+    },
+    {
+      "key": "oil", "name": "WTI 原油价格", "category": "利率与主权债", "unit": "$", "weight": 1,
+      "series": {"source": "fred", "id": "DCOILWTICO"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 100, "alert": 125},
+        {"type": "change", "window": 20, "mode": "pct", "direction": "up", "warn": 20, "alert": 40}
+      ],
+      "note": "能源冲击 → 通胀再起 → 利率被迫走高。"
+    },
+
+    {
+      "key": "sofr_iorb", "name": "SOFR − IORB 利差", "category": "资金市场", "unit": "bp", "weight": 3,
+      "series": {"source": "spread", "a": {"source": "fred", "id": "SOFR"}, "b": {"source": "fred", "id": "IORB"}, "scale": 100},
+      "rules": [{"type": "level", "direction": "above", "warn": 5, "alert": 15}],
+      "note": "回购利率高于准备金利率 = 美元流动性吃紧（2019 年 9 月回购危机的信号）。"
+    },
+    {
+      "key": "srf", "name": "美联储隔夜回购操作用量", "category": "资金市场", "unit": "十亿$", "weight": 2,
+      "series": {"source": "fred", "id": "RPONTSYD"},
+      "rules": [{"type": "level", "direction": "above", "warn": 10, "alert": 50}],
+      "note": "机构被迫向美联储常备回购便利借钱，说明市场融资渠道出了问题。"
+    },
+    {
+      "key": "vix", "name": "VIX 股市恐慌指数", "category": "综合压力", "unit": "", "weight": 1,
+      "series": {"source": "fred", "id": "VIXCLS"},
+      "rules": [{"type": "level", "direction": "above", "warn": 25, "alert": 35}]
+    },
+    {
+      "key": "stlfsi", "name": "圣路易斯联储金融压力指数", "category": "综合压力", "unit": "", "weight": 2,
+      "series": {"source": "fred", "id": "STLFSI4"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 0.5, "alert": 1.5},
+        {"type": "change", "window": 4, "mode": "abs", "direction": "up", "warn": 0.75, "alert": 1.5}
+      ],
+      "note": "0 为长期平均水平，正值代表压力高于平均。周度数据。"
+    },
+    {
+      "key": "nfci", "name": "芝加哥联储金融状况指数 (NFCI)", "category": "综合压力", "unit": "", "weight": 2,
+      "series": {"source": "fred", "id": "NFCI"},
+      "rules": [
+        {"type": "level", "direction": "above", "warn": 0.0, "alert": 0.5},
+        {"type": "change", "window": 4, "mode": "abs", "direction": "up", "warn": 0.25, "alert": 0.5}
+      ],
+      "note": "正值代表金融条件比历史平均更紧。周度数据。"
+    }
+  ],
+
+  "manual_checks": [
+    "头部科技公司（微软/谷歌/Meta/亚马逊/甲骨文）季度财报中的资本开支指引是否首次下调",
+    "GPU 租赁价格（如 H100/B200 每小时价格）与二手 GPU 价格是否快速下跌",
+    "私人信贷基金 / 非上市 BDC 是否出现赎回上限被触发、冻结赎回",
+    "AI 相关公司 CDS 报价（需彭博等付费数据源）",
+    "银行对非银金融机构贷款（美联储 H.8 报表）与相关拨备变化"
+  ]
+}

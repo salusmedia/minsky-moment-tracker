@@ -1,0 +1,7 @@
+# Python / Bytecode
+__pycache__/
+*.pyc
+
+# Local runtime logs & temp data
+logs/
+.DS_Store
